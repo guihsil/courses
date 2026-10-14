@@ -1,0 +1,143 @@
+// use prisma-8
+model User {
+  id                 String               @id @default(uuid())
+  nomeCompleto       String
+  dataNascimento     DateTime
+  cpf                String               @unique
+  email              String               @unique
+  senhaHash          String
+  endereco           String
+  genero             String
+  telefone           String
+  status             Status               @default(ATIVO)
+  emailInstitucional String?              @unique
+  cargo              Cargos[]
+  createdAt          DateTime             @default(now())
+  updatedAt          temporal.updatedAt()
+}
+
+model Aluno {
+  id        String   @id @default(uuid())
+  matricula Int      @unique
+  situacao  Situacao @default(CURSANDO)
+
+  usuarioId String
+  usuario   User     @relation(fields: [usuarioId], references: [id])
+
+  matriculaId String
+  matriculaCurso   Matricula @relation(fields: [matriculaId], references: [id])
+}
+
+model Professor {
+  id           String  @id @default(uuid())
+  matricula    Int     @unique
+  areaAtuacao  String
+  titularidade String
+  usuarioId    String
+  usuario      User    @relation(fields: [usuarioId], references: [id])
+  cursos       Curso[]
+}
+
+model Coordenador {
+  id              String @id @default(uuid())
+  emailCoordencao String @unique
+
+  usuarioId       String
+  usuario         User   @relation(fields: [usuarioId], references: [id])
+
+  cursoId         String
+  curso           Curso  @relation(fields: [cursoId], references: [id])
+}
+
+model Curso {
+  id            String               @id @default(uuid())
+  nomeCurso     String
+  descricao     String
+  cargaHoraria  Int
+
+  matriculas    Matricula[]
+
+  modulos Modulo[]
+
+  professorId   String
+  professor     Professor            @relation(fields: [professorId], references: [id])
+
+  coordenadorId String
+  coordenador   Coordenador          @relation(fields: [coordenadorId], references: [id])
+
+  instituicaoId String
+  instituicao   Instituicao          @relation(fields: [instituicaoId], references: [id])
+
+  createdAt     DateTime             @default(now())
+  updatedAt     temporal.updatedAt()
+}
+
+model Modulo {
+  id        String   @id @default(uuid())
+  nome      String
+  descricao String
+
+  cursoId   String
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+
+  inscricoes Inscricoes[]
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+}
+
+model Instituicao {
+  id        String               @id @default(uuid())
+  nome      String
+  endereco  String
+  telefone  String
+
+  cursos    Curso[]
+
+  createdAt DateTime             @default(now())
+  updatedAt temporal.updatedAt()
+}
+
+model Matricula {
+  id        String   @id @default(uuid())
+
+  alunoId   String
+  aluno     Aluno    @relation(fields: [alunoId], references: [id])
+
+  cursoId   String
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+}
+
+model Inscricoes {
+  id        String   @id @default(uuid())
+
+  alunoId   String
+  aluno     Aluno    @relation(fields: [alunoId], references: [id])
+
+  moduloId  String
+  modulo    Modulo   @relation(fields: [moduloId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+}
+
+enum Status {
+  ATIVO
+  INATIVO
+}
+
+enum Cargos {
+  PROFESSOR
+  COORDENADOR
+  ALUNO
+  ADMINISTRADOR
+}
+
+enum Situacao {
+  CURSANDO
+  CONCLUIDO
+  CANCELADO
+}
