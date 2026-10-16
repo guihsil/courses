@@ -2,11 +2,11 @@ import { Ability, AbilityBuilder } from '@casl/ability';
 import { createPrismaAbility, PrismaQuery, Subjects } from '@casl/prisma';
 import type { Models } from '@/prisma/schema';
 
-type Perfis = {
+export type Perfis = {
     professorId?: string,
     coordenadorId?: string,
-    alunoId?: string
-    cursoId?: string
+    alunoId?: string,
+    cursoId?: string,
 }
 
 export type AppAbility = Ability<[string, 'all' | Subjects<{

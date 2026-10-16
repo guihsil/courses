@@ -18,7 +18,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'3ce84e9db9ba1df0c11461d07d3b8f0008ae4b060ee0f5b5c4f907beef7495a8'>;
+  StorageHashBase<'ed426cb9bfdeac2e728e05f06d487874218f10295ea6a01b96c4d300a65b327a'>;
 export type ExecutionHash =
   ExecutionHashBase<'5dce0a7b42ba31bbe89d7308439de33a5b610cafb2b49091378cab6a20b6bd91'>;
 export type ProfileHash =
@@ -266,6 +266,7 @@ export type FieldOutputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Instituicao: {
+      readonly cnpj: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly endereco: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -347,6 +348,7 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Instituicao: {
+      readonly cnpj: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly endereco: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -428,6 +430,7 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Instituicao: {
+      readonly cnpj: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly endereco: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -509,6 +512,7 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Instituicao: {
+      readonly cnpj: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly endereco: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -606,6 +610,7 @@ export namespace Models {
     readonly [RelationKeys]?: 'aluno' | 'modulo';
   };
   export type public_Instituicao = {
+    cnpj: CodecTypes['pg/text@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     endereco: CodecTypes['pg/text@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
@@ -1045,6 +1050,12 @@ type ContractBase = Omit<
             };
             readonly Instituicao: {
               columns: {
+                readonly cnpj: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
                 readonly createdAt: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -1084,7 +1095,7 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
+              uniques: readonly [{ readonly columns: readonly ['cnpj'] }];
               indexes: readonly [];
               foreignKeys: readonly [];
             };
@@ -1738,6 +1749,10 @@ type ContractBase = Omit<
           };
           readonly Instituicao: {
             readonly fields: {
+              readonly cnpj: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1786,6 +1801,7 @@ type ContractBase = Omit<
               readonly table: 'Instituicao';
               readonly namespaceId: 'public';
               readonly fields: {
+                readonly cnpj: { readonly column: 'cnpj' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly endereco: { readonly column: 'endereco' };
                 readonly id: { readonly column: 'id' };

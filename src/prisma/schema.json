@@ -558,6 +558,13 @@
           },
           "Instituicao": {
             "fields": {
+              "cnpj": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -620,6 +627,9 @@
             },
             "storage": {
               "fields": {
+                "cnpj": {
+                  "column": "cnpj"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -1561,6 +1571,11 @@
             },
             "Instituicao": {
               "columns": {
+                "cnpj": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "dataType": "pg/timestamptz",
@@ -1603,7 +1618,13 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "cnpj"
+                  ]
+                }
+              ]
             },
             "Matricula": {
               "columns": {
@@ -2019,7 +2040,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3ce84e9db9ba1df0c11461d07d3b8f0008ae4b060ee0f5b5c4f907beef7495a8"
+    "storageHash": "ed426cb9bfdeac2e728e05f06d487874218f10295ea6a01b96c4d300a65b327a"
   },
   "execution": {
     "executionHash": "5dce0a7b42ba31bbe89d7308439de33a5b610cafb2b49091378cab6a20b6bd91",
