@@ -17,5 +17,10 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "migrations",
+    "src/generated/prisma"
+  ]
 }

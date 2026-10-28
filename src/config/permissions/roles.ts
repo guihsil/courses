@@ -1,6 +1,6 @@
 import { Ability, AbilityBuilder } from '@casl/ability';
 import { createPrismaAbility, PrismaQuery, Subjects } from '@casl/prisma';
-import type { Models } from '@/prisma/schema';
+import type { User, Curso, Inscricoes, Matricula, Modulo } from '@/generated/prisma/client';
 
 export type Perfis = {
     professorId?: string,
@@ -10,21 +10,21 @@ export type Perfis = {
 }
 
 export type AppAbility = Ability<[string, 'all' | Subjects<{
-    Usuario: Models.public_User,
-    Curso: Models.public_Curso,
-    Inscricoes: Models.public_Inscricoes,
-    Matricula: Models.public_Matricula,
-    Modulo: Models.public_Modulo
+    Usuario: User,
+    Curso: Curso,
+    Inscricoes: Inscricoes,
+    Matricula: Matricula,
+    Modulo: Modulo
 }>], PrismaQuery>;
 
-export default function defineAbilityFor(user: Models.public_User, perfil: Perfis) {
+export default function defineAbilityFor(user: User, perfil: Perfis) {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(createPrismaAbility);
 
     can('update', 'Usuario', { userId: user.id });
     can('read', 'Curso', { userId: user.id }); 
     can('read', 'Modulo', { userId: user.id });
     
-    if (user.cargo.includes('COORDENADOR')) {
+    if (user.cargo === 'COORDENADOR') {
         can('create', 'Curso', { coordenadorId: perfil.coordenadorId });
         can('update', 'Curso', { coordenadorId: perfil.coordenadorId });
         can('delete', 'Curso', { coordenadorId: perfil.coordenadorId });
@@ -34,11 +34,11 @@ export default function defineAbilityFor(user: Models.public_User, perfil: Perfi
         can('delete', 'Modulo', { cursoId: { coordenadorId: perfil.coordenadorId } });
     } 
 
-    if (user.cargo.includes('PROFESSOR')) {
+    if (user.cargo === 'PROFESSOR') {
         can('update', 'Modulo', { cursoId: { professorId: perfil.professorId } });
     }
     
-    if (user.cargo.includes('ALUNO')) {
+    if (user.cargo === 'ALUNO') {
         can('create', 'Inscricoes', { cursoId: { alunoId: perfil.alunoId } });
         can('read', 'Inscricoes', { cursoId: { alunoId: perfil.alunoId } });
         can('update', 'Inscricoes', { cursoId: { alunoId: perfil.alunoId } });
@@ -47,7 +47,7 @@ export default function defineAbilityFor(user: Models.public_User, perfil: Perfi
         can('create', 'Matricula', { alunoId: perfil.alunoId });
     }
 
-    if (user.cargo.includes('ADMINISTRADOR')) {
+    if (user.cargo === 'ADMINISTRADOR') {
         can('manage', 'all');
     }
 

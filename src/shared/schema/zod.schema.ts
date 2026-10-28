@@ -1,56 +1,11 @@
 import { z } from 'zod';
-import type { Models } from '@/prisma/schema';
+import type { Situacao } from '@/generated/prisma/enums';
 
-const cpfSchema = z
-    .string()
-    .transform((v) => v.replace(/\D/g, ""))
-    .refine((v) => v.length === 11, 'CPF deve conter 11 dígitos')
-    .refine((v) => !/^(\d)\1{10}$/.test(v), 'CPF inválido')
-    .refine((v) => {
-        for (let i = 9; i < 11; i++) {
-            let sum = 0;
-            for(let j = 0; j < i; j++){
-
-            }
-            if (Number(v[i]) !== ((10 * sum) % 11) % 10) return false;
-        }
-        return true;
-    }, 'CPF inválido');
-
-const status = ['ATIVO', 'INATIVO'] as const;
-
-type Cargo = Models.public_User['cargo'][number];
-
-const cargos = [
-    "PROFESSOR", "COORDENADOR", "ALUNO", "ADMINISTRADOR"
-] as const satisfies readonly Cargo[];
-
-const cargoSchema = z.enum(cargos);
-
-type Situacao = Models.public_Aluno['situacao'][number];
 const situacoes = [
     "CURSANDO", "CONCLUIDO", "CANCELADO"
 ] as const satisfies readonly Situacao[];
 
 const situacaoSchema = z.enum(situacoes);
-
-// User
-export const createUserSchema = z.object({
-    id: z.uuid(),
-    nomeCompleto: z.string().nonempty(),
-    dataNascimento: z.iso.date(),
-    cpf: cpfSchema,
-    email: z.email(),
-    senhaHash: z.string(),
-    endereco: z.string(),
-    genero: z.string(),
-    telefone: z.string(),
-    status: z.enum(status),
-    emailInstitucional: z.email(),
-    cargo: cargoSchema,
-    createdAt: z.coerce.date(),
-    updatedAt: z.coerce.date()
-});
 
 // Aluno
 export const createAlunoSchema = z.object({

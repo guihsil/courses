@@ -1,31 +1,46 @@
-// use prisma-8
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
 model User {
-  id                 String               @id @default(uuid())
+  id                 String   @id @default(uuid())
   nomeCompleto       String
   dataNascimento     DateTime
-  cpf                String               @unique
-  email              String               @unique
+  cpf                String   @unique
+  email              String   @unique
   senhaHash          String
   endereco           String
   genero             String
   telefone           String
-  status             Status               @default(ATIVO)
-  emailInstitucional String?              @unique
-  cargo              Cargos[]
-  createdAt          DateTime             @default(now())
-  updatedAt          temporal.updatedAt()
+  status             Status   @default(ATIVO)
+  emailInstitucional String?  @unique
+  cargo              Cargo
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  alunos        Aluno[]
+  professores   Professor[]
+  coordenadores Coordenador[]
 }
 
 model Aluno {
-  id             String    @id @default(uuid())
-  matricula      Int       @unique
-  situacao       Situacao  @default(CURSANDO)
+  id        String   @id @default(uuid())
+  matricula Int      @unique
+  situacao  Situacao @default(CURSANDO)
 
-  usuarioId      String
-  usuario        User      @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  usuario   User   @relation(fields: [usuarioId], references: [id])
 
   matriculaId    String
-  matriculaCurso Matricula @relation(fields: [matriculaId], references: [id])
+  matriculaCurso Matricula @relation("AlunoMatriculaRef", fields: [matriculaId], references: [id])
+
+  matriculas Matricula[]  @relation("AlunoMatriculas")
+  inscricoes Inscricoes[]
 }
 
 model Professor {
@@ -42,87 +57,90 @@ model Coordenador {
   id              String @id @default(uuid())
   emailCoordencao String @unique
 
-  usuarioId       String
-  usuario         User   @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  usuario   User   @relation(fields: [usuarioId], references: [id])
 
-  cursoId         String
-  curso           Curso  @relation(fields: [cursoId], references: [id])
+  cursoId String
+  curso   Curso  @relation("CoordenadorCurso", fields: [cursoId], references: [id])
+
+  cursos Curso[] @relation("CursoCoordenador")
 }
 
 model Curso {
-  id            String               @id @default(uuid())
-  nomeCurso     String
-  descricao     String
-  cargaHoraria  Int
+  id           String @id @default(uuid())
+  nomeCurso    String
+  descricao    String
+  cargaHoraria Int
 
-  matriculas    Matricula[]
+  matriculas Matricula[]
+  modulos    Modulo[]
 
-  modulos       Modulo[]
-
-  professorId   String
-  professor     Professor            @relation(fields: [professorId], references: [id])
+  professorId String
+  professor   Professor @relation(fields: [professorId], references: [id])
 
   coordenadorId String
-  coordenador   Coordenador          @relation(fields: [coordenadorId], references: [id])
+  coordenador   Coordenador   @relation("CursoCoordenador", fields: [coordenadorId], references: [id])
+  coordenacoes  Coordenador[] @relation("CoordenadorCurso")
 
   instituicaoId String
-  instituicao   Instituicao          @relation(fields: [instituicaoId], references: [id])
+  instituicao   Instituicao @relation(fields: [instituicaoId], references: [id])
 
-  createdAt     DateTime             @default(now())
-  updatedAt     temporal.updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Modulo {
-  id         String               @id @default(uuid())
-  nome       String
-  descricao  String
+  id        String @id @default(uuid())
+  nome      String
+  descricao String
 
-  cursoId    String
-  curso      Curso                @relation(fields: [cursoId], references: [id])
+  cursoId String
+  curso   Curso  @relation(fields: [cursoId], references: [id])
 
   inscricoes Inscricoes[]
 
-  createdAt  DateTime             @default(now())
-  updatedAt  temporal.updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Instituicao {
-  id        String               @id @default(uuid())
-  nome      String
-  endereco  String
-  telefone  String
-  cnpj      String               @unique
+  id       String @id @default(uuid())
+  nome     String
+  endereco String
+  telefone String
+  cnpj     String @unique
 
-  cursos    Curso[]
+  cursos Curso[]
 
-  createdAt DateTime             @default(now())
-  updatedAt temporal.updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Matricula {
-  id        String               @id @default(uuid())
+  id String @id @default(uuid())
 
-  alunoId   String
-  aluno     Aluno                @relation(fields: [alunoId], references: [id])
+  alunoId String
+  aluno   Aluno   @relation("AlunoMatriculas", fields: [alunoId], references: [id])
+  alunos  Aluno[] @relation("AlunoMatriculaRef")
 
-  cursoId   String
-  curso     Curso                @relation(fields: [cursoId], references: [id])
+  cursoId String
+  curso   Curso  @relation(fields: [cursoId], references: [id])
 
-  createdAt DateTime             @default(now())
-  updatedAt temporal.updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Inscricoes {
-  id        String               @id @default(uuid())
+  id String @id @default(uuid())
 
-  alunoId   String
-  aluno     Aluno                @relation(fields: [alunoId], references: [id])
+  alunoId String
+  aluno   Aluno  @relation(fields: [alunoId], references: [id])
 
-  moduloId  String
-  modulo    Modulo               @relation(fields: [moduloId], references: [id])
+  moduloId String
+  modulo   Modulo @relation(fields: [moduloId], references: [id])
 
-  createdAt DateTime             @default(now())
-  updatedAt temporal.updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Status {
@@ -130,7 +148,7 @@ enum Status {
   INATIVO
 }
 
-enum Cargos {
+enum Cargo {
   PROFESSOR
   COORDENADOR
   ALUNO
